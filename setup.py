@@ -13,7 +13,7 @@ setup(
     name="md2pdf-mermaid",
     version="1.0.0",
     author="Roberto Butinar",
-    author_email="",
+    author_email="roberto.butinar@gmail.com",
     description="Convert Markdown to PDF with Mermaid diagram rendering",
     long_description=long_description,
     long_description_content_type="text/markdown",
