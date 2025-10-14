@@ -26,6 +26,7 @@ MANIFEST
 
 # Virtual environments
 venv/
+venv_win/
 env/
 ENV/
 .venv
@@ -48,6 +49,10 @@ htmlcov/
 *.png
 temp/
 tmp/
+
+# Test files (don't publish)
+test_*.md
+test_*.py
 
 # OS
 .DS_Store

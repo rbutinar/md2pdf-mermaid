@@ -24,6 +24,14 @@ pip install git+https://github.com/rbutinar/md2pdf-mermaid.git
 playwright install chromium
 ```
 
+**WSL Users**: Use Windows Python to avoid dependency issues:
+```bash
+python3.exe -m venv venv  # Windows venv, no sudo needed!
+venv/Scripts/pip.exe install git+https://github.com/rbutinar/md2pdf-mermaid.git
+venv/Scripts/playwright.exe install chromium
+```
+See [WSL_SETUP.md](WSL_SETUP.md) for details.
+
 ### Command Line Usage
 
 ```bash
@@ -201,6 +209,25 @@ The PDF file is open in a viewer. Close it first, then try again.
 1. Check Playwright is installed: `python -c "import playwright"`
 2. Check Chromium is installed: `playwright install --force chromium`
 3. Try disabling and re-enabling Mermaid: `md2pdf file.md --no-mermaid` (to verify other features work)
+
+### WSL: "Host system is missing dependencies to run browsers"
+
+**Best solution**: Use Windows Python instead of Linux Python (no sudo needed):
+
+```bash
+# Create Windows venv from WSL
+python3.exe -m venv venv
+venv/Scripts/pip.exe install git+https://github.com/rbutinar/md2pdf-mermaid.git
+venv/Scripts/playwright.exe install chromium
+venv/Scripts/md2pdf.exe document.md  # Works perfectly!
+```
+
+**Alternative** (requires sudo): Install Linux dependencies:
+```bash
+sudo apt-get install -y libnss3 libnspr4 libatk1.0-0 libgbm1 libasound2t64
+```
+
+See [WSL_SETUP.md](WSL_SETUP.md) for complete instructions.
 
 ### Large File Conversion Slow
 
