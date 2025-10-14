@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "md2pdf-mermaid"
+version = "1.0.0"
+description = "Convert Markdown to PDF with Mermaid diagram rendering"
+readme = "README.md"
+authors = [{name = "Roberto Butinar", email = "roberto.butinar@gmail.com"}]
+license = {text = "MIT"}
+keywords = ["markdown", "pdf", "mermaid", "diagram", "converter", "documentation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Documentation",
+    "Topic :: Text Processing :: Markup",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "reportlab>=4.0.0",
+    "playwright>=1.40.0",
+    "pillow>=10.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "flake8>=6.0",
+    "mypy>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/rbutinar/md2pdf-mermaid"
+Repository = "https://github.com/rbutinar/md2pdf-mermaid"
+Issues = "https://github.com/rbutinar/md2pdf-mermaid/issues"
+
+[project.scripts]
+md2pdf = "md2pdf.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["md2pdf*"]

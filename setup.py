@@ -19,12 +19,12 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/rbutinar/md2pdf-mermaid",
     packages=find_packages(),
+    license="MIT",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Documentation",
         "Topic :: Text Processing :: Markup",
-        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
