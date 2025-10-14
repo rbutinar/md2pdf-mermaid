@@ -1,5 +1,9 @@
 # md2pdf-mermaid
 
+[![PyPI version](https://badge.fury.io/py/md2pdf-mermaid.svg)](https://pypi.org/project/md2pdf-mermaid/)
+[![Python versions](https://img.shields.io/pypi/pyversions/md2pdf-mermaid.svg)](https://pypi.org/project/md2pdf-mermaid/)
+[![License](https://img.shields.io/pypi/l/md2pdf-mermaid.svg)](https://github.com/rbutinar/md2pdf-mermaid/blob/master/LICENSE)
+
 **Professional Markdown to PDF converter with automatic Mermaid diagram rendering**
 
 Convert your Markdown documentation to beautiful PDFs with:
@@ -17,17 +21,23 @@ Convert your Markdown documentation to beautiful PDFs with:
 ### Installation
 
 ```bash
-# From Git repository
-pip install git+https://github.com/rbutinar/md2pdf-mermaid.git
+# From PyPI (recommended)
+pip install md2pdf-mermaid
 
 # Install Playwright browser (required for Mermaid rendering)
+playwright install chromium
+```
+
+**Alternative** - From Git repository:
+```bash
+pip install git+https://github.com/rbutinar/md2pdf-mermaid.git
 playwright install chromium
 ```
 
 **WSL Users**: Use Windows Python to avoid dependency issues:
 ```bash
 python3.exe -m venv venv  # Windows venv, no sudo needed!
-venv/Scripts/pip.exe install git+https://github.com/rbutinar/md2pdf-mermaid.git
+venv/Scripts/pip.exe install md2pdf-mermaid
 venv/Scripts/playwright.exe install chromium
 ```
 See [WSL_SETUP.md](WSL_SETUP.md) for details.
@@ -140,7 +150,7 @@ Automatically generate PDFs in your pipeline:
 # GitHub Actions example
 - name: Generate PDF Documentation
   run: |
-    pip install git+https://github.com/rbutinar/md2pdf-mermaid.git
+    pip install md2pdf-mermaid
     playwright install chromium
     md2pdf README.md -o docs/README.pdf
 ```
@@ -217,7 +227,7 @@ The PDF file is open in a viewer. Close it first, then try again.
 ```bash
 # Create Windows venv from WSL
 python3.exe -m venv venv
-venv/Scripts/pip.exe install git+https://github.com/rbutinar/md2pdf-mermaid.git
+venv/Scripts/pip.exe install md2pdf-mermaid
 venv/Scripts/playwright.exe install chromium
 venv/Scripts/md2pdf.exe document.md  # Works perfectly!
 ```
@@ -284,5 +294,6 @@ MIT License - see LICENSE file for details
 ---
 
 **Version**: 1.0.0
-**Last Updated**: 2025-10-14
+**Published**: 2025-10-14
+**PyPI**: https://pypi.org/project/md2pdf-mermaid/
 **Status**: Production Ready ✅
