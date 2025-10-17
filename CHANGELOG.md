@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Planned for 1.1.0
+- Custom Mermaid themes (dark, forest, neutral)
+- Page size and orientation options (A4, Letter, A3, landscape/portrait)
+- Batch processing with `md2pdf docs/*.md --output-dir pdfs/`
+- Table of contents auto-generation
+- Custom CSS injection via YAML configuration
+
+See [ROADMAP.md](ROADMAP.md) for detailed feature planning and long-term vision.
+
 ## [1.0.0] - 2025-10-14
 
 ### Added
@@ -33,3 +44,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reportlab for PDF generation
 - Automatic temp file cleanup
 - Error handling and fallbacks
+
+### Documentation
+- WSL (Windows Subsystem for Linux) setup guide
+- PyPI package publication
+- Comprehensive README with examples
+
+---
+
+## Version Links
+
+[Unreleased]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/rbutinar/md2pdf-mermaid/releases/tag/v1.0.0

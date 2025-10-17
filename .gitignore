@@ -44,6 +44,9 @@ ENV/
 htmlcov/
 .tox/
 
+# Development notes (private)
+notes/
+
 # Generated files
 *.pdf
 *.png
