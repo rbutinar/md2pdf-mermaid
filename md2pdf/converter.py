@@ -288,7 +288,17 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
                     continue
                 cells = [cell.strip() for cell in line.split('|') if cell.strip()]
                 if cells:
-                    table_data.append(cells)
+                    # Process markdown formatting in each cell
+                    processed_cells = []
+                    for cell in cells:
+                        # Escape XML special characters first
+                        cell = cell.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                        # Apply markdown formatting
+                        cell = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', cell)
+                        cell = re.sub(r'`(.+?)`', r'<font face="courier" color="#666666">\1</font>', cell)
+                        # Convert to Paragraph for ReportLab to process formatting
+                        processed_cells.append(Paragraph(cell, styles['Normal']))
+                    table_data.append(processed_cells)
 
             if table_data:
                 t = Table(table_data)

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned for 1.1.0
+- Page numbering in PDF footer
 - Custom Mermaid themes (dark, forest, neutral)
 - Page size and orientation options (A4, Letter, A3, landscape/portrait)
 - Batch processing with `md2pdf docs/*.md --output-dir pdfs/`
@@ -15,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom CSS injection via YAML configuration
 
 See [ROADMAP.md](ROADMAP.md) for detailed feature planning and long-term vision.
+
+## [1.0.1] - 2025-10-20
+
+### Fixed
+- Bold formatting (`**text**`) in table cells now renders correctly in PDF
+- Previously, `**` markers were displayed literally instead of being converted to bold text
+- Table cells now support the same inline markdown formatting as paragraphs (bold and inline code)
 
 ## [1.0.0] - 2025-10-14
 
@@ -54,5 +62,6 @@ See [ROADMAP.md](ROADMAP.md) for detailed feature planning and long-term vision.
 
 ## Version Links
 
-[Unreleased]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rbutinar/md2pdf-mermaid/releases/tag/v1.0.0
