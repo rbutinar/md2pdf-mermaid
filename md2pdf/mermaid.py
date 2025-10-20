@@ -90,8 +90,9 @@ def render_mermaid_to_png(mermaid_code, output_path, width=1400, height=1000):
             # Wait a bit more for stabilization
             page.wait_for_timeout(1000)
 
-            # Screenshot of full page
-            page.screenshot(path=output_path, full_page=True)
+            # Take screenshot of just the SVG element (not the full page)
+            svg_element = page.query_selector('#diagram svg')
+            svg_element.screenshot(path=output_path)
 
             browser.close()
             return True

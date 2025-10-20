@@ -9,9 +9,12 @@
 Convert your Markdown documentation to beautiful PDFs with:
 - ✅ Professional formatting (headers, tables, code blocks)
 - ✅ **Automatic Mermaid diagram rendering** (diagrams as PNG images)
+- ✅ **Full Unicode/UTF-8 support** (multilingual text, special characters)
+- ✅ **Customizable fonts** (Arial, DejaVu, Helvetica, or custom TTF)
 - ✅ **Page numbering** (centered footer on all pages)
 - ✅ **Multiple page sizes** (A4, A3, Letter)
 - ✅ **Portrait & Landscape** orientation support
+- ✅ **Bold & inline code** formatting in lists
 - ✅ Syntax highlighting for code blocks
 - ✅ Customizable styling
 - ✅ CLI and Python API
@@ -60,6 +63,9 @@ md2pdf document.md --title "Project Report"
 # Page size and orientation
 md2pdf document.md --page-size letter --orientation landscape
 
+# Custom font (arial, dejavu, helvetica, or path to .ttf)
+md2pdf document.md --font arial
+
 # Disable page numbers
 md2pdf document.md --no-page-numbers
 
@@ -67,7 +73,7 @@ md2pdf document.md --no-page-numbers
 md2pdf document.md --no-mermaid
 
 # Combine options
-md2pdf document.md -o report.pdf --page-size a3 --orientation landscape --title "Report"
+md2pdf document.md -o report.pdf --page-size a3 --orientation landscape --title "Report" --font arial
 ```
 
 ### Python API Usage
@@ -94,7 +100,8 @@ convert_markdown_to_pdf(
     page_size="letter",           # Options: 'a4', 'a3', 'letter'
     orientation="landscape",       # Options: 'portrait', 'landscape'
     page_numbers=True,             # Enable/disable page numbering
-    enable_mermaid=True            # Enable/disable Mermaid rendering
+    enable_mermaid=True,           # Enable/disable Mermaid rendering
+    font_name="arial"              # Font: None (auto), 'arial', 'dejavu', 'helvetica', or .ttf path
 )
 ```
 
@@ -105,12 +112,13 @@ convert_markdown_to_pdf(
 ### Markdown Support
 
 - **Headers** (H1-H4) with colored borders
-- **Bold**, *italic*, `inline code`
-- Bullet lists and numbered lists
+- **Bold**, *italic*, `inline code` (including in lists!)
+- Bullet lists and numbered lists with **full formatting support**
 - Tables with colored headers
 - Code blocks with syntax highlighting
 - Horizontal rules
-- **Mermaid diagrams** (rendered as images)
+- **Mermaid diagrams** (rendered as high-quality images)
+- **Full Unicode/UTF-8** support (multilingual, emoji, special characters)
 
 ### Mermaid Diagrams
 
@@ -133,12 +141,15 @@ graph LR
 - Multiple page sizes: **A4**, **A3**, **Letter**
 - **Portrait** and **Landscape** orientation support
 - **Page numbering** in footer (centered, customizable)
+- **Customizable fonts**: Arial (Windows), DejaVu (Linux), Helvetica, or custom TTF
+- **Unicode/UTF-8** support with automatic font detection
 - Professional color scheme
 - Tables with alternating row colors
 - Code blocks with light gray background
 - Headers with colored borders
 - Optimized font sizes (10pt body, 7pt code)
 - 2cm margins on all sides
+- **Full-width Mermaid diagrams** (optimized for readability)
 
 ---
 
@@ -319,7 +330,18 @@ MIT License - see LICENSE file for details
 
 ---
 
-**Version**: 1.1.0
+**Version**: 1.2.0
 **Published**: 2025-10-20
 **PyPI**: https://pypi.org/project/md2pdf-mermaid/
 **Status**: Production Ready ✅
+
+---
+
+## 🆕 What's New in v1.2.0
+
+- ✨ **Full Unicode/UTF-8 support** - Multilingual text, emoji, special characters (•, è, à, etc.)
+- ✨ **Customizable fonts** - Choose Arial, DejaVu, Helvetica, or provide custom TTF file
+- ✨ **Bold & inline code in lists** - Full markdown formatting support in bullet/numbered lists
+- ✨ **Larger Mermaid diagrams** - Now use full page width for better readability
+- 🐛 **Fixed encoding issues** - Bullet characters and accented text now display correctly
+- 🔧 **Automatic font detection** - Auto-selects best Unicode font for your system

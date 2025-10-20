@@ -16,6 +16,8 @@ from reportlab.platypus import (
 )
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_CENTER
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 try:
     from .mermaid import render_mermaid_to_png, is_playwright_available
@@ -165,7 +167,7 @@ def add_page_number(canvas, doc):
 
 def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
                             enable_mermaid=True, page_numbers=True,
-                            page_size='a4', orientation='portrait'):
+                            page_size='a4', orientation='portrait', font_name=None):
     """
     Convert Markdown text to PDF
 
@@ -177,6 +179,8 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         page_numbers: Enable page numbering in footer (default: True)
         page_size: Page size ('a4', 'a3', 'letter') (default: 'a4')
         orientation: Page orientation ('portrait', 'landscape') (default: 'portrait')
+        font_name: Font to use (None=auto-detect, 'helvetica'=standard, 'arial'=Windows,
+                   'dejavu'=Linux, or path to .ttf file) (default: None)
 
     Returns:
         dict with keys:
@@ -185,6 +189,74 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
             - mermaid_rendered: Number of Mermaid diagrams successfully rendered
             - playwright_available: Whether Playwright is available
     """
+
+    # Register UTF-8 fonts if available
+    use_unicode_fonts = False
+    unicode_font_name = None
+
+    # Handle user-specified font
+    if font_name and font_name.lower() == 'helvetica':
+        # Use standard Helvetica fonts (no Unicode support)
+        use_unicode_fonts = False
+        unicode_font_name = None
+    else:
+        # Determine font sources to try
+        if font_name:
+            # User specified a font - try custom paths or specific font
+            font_name_lower = font_name.lower()
+            if font_name_lower == 'arial':
+                font_attempts = [
+                    ('Arial', 'C:\\Windows\\Fonts\\arial.ttf', 'C:\\Windows\\Fonts\\arialbd.ttf', 'C:\\Windows\\Fonts\\cour.ttf'),
+                ]
+            elif font_name_lower == 'dejavu':
+                font_attempts = [
+                    ('DejaVuSans', 'DejaVuSans.ttf', 'DejaVuSans-Bold.ttf', 'DejaVuSansMono.ttf'),
+                ]
+            elif font_name.endswith('.ttf'):
+                # Custom TTF file path - assume user provides base name
+                # User should provide path like "path/to/MyFont.ttf" and we'll derive bold/mono
+                base_path = font_name.rsplit('.', 1)[0]
+                font_attempts = [
+                    ('CustomFont', font_name, f'{base_path}-Bold.ttf', f'{base_path}-Mono.ttf'),
+                ]
+            else:
+                # Try as system font name
+                font_attempts = [
+                    (font_name, font_name + '.ttf', font_name + '-Bold.ttf', font_name + '-Mono.ttf'),
+                ]
+        else:
+            # Auto-detect: try different font sources in order of preference
+            font_attempts = [
+                # DejaVu (Linux, sometimes Windows)
+                ('DejaVuSans', 'DejaVuSans.ttf', 'DejaVuSans-Bold.ttf', 'DejaVuSansMono.ttf'),
+                # Windows system fonts
+                ('Arial', 'C:\\Windows\\Fonts\\arial.ttf', 'C:\\Windows\\Fonts\\arialbd.ttf', 'C:\\Windows\\Fonts\\cour.ttf'),
+                # Alternative Windows path
+                ('Arial', 'arial.ttf', 'arialbd.ttf', 'cour.ttf'),
+            ]
+
+        for font_family, regular, bold, mono in font_attempts:
+            try:
+                # Register individual fonts
+                pdfmetrics.registerFont(TTFont(f'{font_family}', regular))
+                pdfmetrics.registerFont(TTFont(f'{font_family}-Bold', bold))
+                pdfmetrics.registerFont(TTFont(f'{font_family}-Mono', mono))
+
+                # Register font family to enable automatic bold/italic switching
+                from reportlab.pdfbase.pdfmetrics import registerFontFamily
+                registerFontFamily(
+                    font_family,
+                    normal=font_family,
+                    bold=f'{font_family}-Bold',
+                    italic=font_family,  # Use regular for italic if not available
+                    boldItalic=f'{font_family}-Bold'
+                )
+
+                use_unicode_fonts = True
+                unicode_font_name = font_family
+                break
+            except:
+                continue
 
     # Parse markdown
     elements = parse_markdown(markdown_text)
@@ -209,11 +281,25 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
 
     styles = getSampleStyleSheet()
 
+    # Set default font based on Unicode support
+    default_font = unicode_font_name if use_unicode_fonts else 'Helvetica'
+    bold_font = f'{unicode_font_name}-Bold' if use_unicode_fonts else 'Helvetica-Bold'
+    mono_font = f'{unicode_font_name}-Mono' if use_unicode_fonts else 'Courier'
+
+    # Update base Normal style for Unicode support
+    if use_unicode_fonts:
+        styles['Normal'].fontName = default_font
+        styles['Heading1'].fontName = bold_font
+        styles['Heading2'].fontName = bold_font
+        styles['Heading3'].fontName = bold_font
+        styles['Heading4'].fontName = bold_font
+
     # Custom styles
     styles.add(ParagraphStyle(
         name='CustomH1',
         parent=styles['Heading1'],
         fontSize=20,
+        fontName=bold_font,
         textColor=colors.HexColor('#2c3e50'),
         spaceAfter=12,
         spaceBefore=12,
@@ -226,6 +312,7 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         name='CustomH2',
         parent=styles['Heading2'],
         fontSize=16,
+        fontName=bold_font,
         textColor=colors.HexColor('#34495e'),
         spaceAfter=10,
         spaceBefore=10,
@@ -238,6 +325,7 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         name='CustomH3',
         parent=styles['Heading3'],
         fontSize=14,
+        fontName=bold_font,
         textColor=colors.HexColor('#555555'),
         spaceAfter=8,
         spaceBefore=8
@@ -247,7 +335,7 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         name='CustomCode',
         parent=styles['Code'],
         fontSize=7,
-        fontName='Courier',
+        fontName=mono_font,
         backgroundColor=colors.HexColor('#f8f8f8'),
         borderWidth=1,
         borderColor=colors.HexColor('#dddddd'),
@@ -258,6 +346,9 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
 
     story = []
     temp_files = []  # Track temporary files for cleanup
+
+    # Calculate available width for images (page width minus margins)
+    available_width = final_pagesize[0] - doc.leftMargin - doc.rightMargin
 
     for elem_type, content in elements:
         if elem_type == 'h1':
@@ -282,9 +373,21 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
             story.append(Paragraph(content, styles['Normal']))
 
         elif elem_type == 'list':
-            story.append(Paragraph(f"• {content}", styles['Normal']))
+            # Handle inline formatting
+            # Escape XML special characters first
+            content = content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            # Apply markdown formatting
+            content = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', content)
+            content = re.sub(r'`(.+?)`', r'<font face="courier" color="#666666">\1</font>', content)
+            story.append(Paragraph(f"&#8226; {content}", styles['Normal']))
 
         elif elem_type == 'numlist':
+            # Handle inline formatting
+            # Escape XML special characters first
+            content = content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            # Apply markdown formatting
+            content = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', content)
+            content = re.sub(r'`(.+?)`', r'<font face="courier" color="#666666">\1</font>', content)
             story.append(Paragraph(f"  {content}", styles['Normal']))
 
         elif elem_type == 'mermaid':
@@ -296,10 +399,11 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
                         tmp_path = tmp_file.name
                     temp_files.append(tmp_path)
 
-                    # Render Mermaid
-                    if render_mermaid_to_png(content, tmp_path, width=1400, height=1000):
-                        # Insert image in PDF
-                        img = Image(tmp_path, width=16*cm, height=10*cm, kind='proportional')
+                    # Render Mermaid with larger resolution for better quality
+                    if render_mermaid_to_png(content, tmp_path, width=2000, height=1400):
+                        # Insert image in PDF using full available width
+                        # kind='proportional' will scale to fit while maintaining aspect ratio
+                        img = Image(tmp_path, width=available_width, height=available_width, kind='proportional')
                         story.append(img)
                         story.append(Spacer(1, 0.3*cm))
                         mermaid_rendered += 1

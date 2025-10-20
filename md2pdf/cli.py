@@ -22,6 +22,8 @@ Examples:
   md2pdf doc.md --title "My Report"          # Custom title
   md2pdf doc.md --page-size letter           # Use Letter size
   md2pdf doc.md --orientation landscape      # Landscape orientation
+  md2pdf doc.md --font arial                 # Use Arial font (Windows)
+  md2pdf doc.md --font dejavu                # Use DejaVu font (Linux)
 
 For more information: https://github.com/rbutinar/md2pdf-mermaid
         """
@@ -62,9 +64,13 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
         help="Disable page numbering"
     )
     parser.add_argument(
+        "--font",
+        help="Font to use (auto=auto-detect, helvetica=standard, arial=Windows, dejavu=Linux, or path to .ttf file)"
+    )
+    parser.add_argument(
         "-v", "--version",
         action="version",
-        version="md2pdf 1.1.0"
+        version="md2pdf 1.2.0"
     )
 
     args = parser.parse_args()
@@ -98,7 +104,8 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
             enable_mermaid=not args.no_mermaid,
             page_numbers=not args.no_page_numbers,
             page_size=args.page_size,
-            orientation=args.orientation
+            orientation=args.orientation,
+            font_name=args.font if args.font and args.font.lower() != 'auto' else None
         )
 
         # Success
