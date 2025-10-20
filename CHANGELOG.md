@@ -7,15 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for 1.1.0
-- Page numbering in PDF footer
+### Planned for Future Versions
 - Custom Mermaid themes (dark, forest, neutral)
-- Page size and orientation options (A4, Letter, A3, landscape/portrait)
 - Batch processing with `md2pdf docs/*.md --output-dir pdfs/`
 - Table of contents auto-generation
 - Custom CSS injection via YAML configuration
 
 See [ROADMAP.md](ROADMAP.md) for detailed feature planning and long-term vision.
+
+## [1.1.0] - 2025-10-20
+
+### Added
+- **Page numbering** in PDF footer (centered at bottom of each page)
+  - Enabled by default
+  - Can be disabled with `--no-page-numbers` flag
+- **Page size options**: A4, A3, Letter
+  - Use `--page-size` flag (default: a4)
+- **Page orientation options**: Portrait, Landscape
+  - Use `--orientation` flag (default: portrait)
+
+### Technical
+- New `get_page_size()` function to handle page dimensions
+- Updated `add_page_number()` to work with any page size
+- CLI now supports `--page-size`, `--orientation`, and `--no-page-numbers` flags
+- Version updated to 1.1.0
 
 ## [1.0.1] - 2025-10-20
 
@@ -62,6 +77,7 @@ See [ROADMAP.md](ROADMAP.md) for detailed feature planning and long-term vision.
 
 ## Version Links
 
-[Unreleased]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/rbutinar/md2pdf-mermaid/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rbutinar/md2pdf-mermaid/releases/tag/v1.0.0

@@ -9,6 +9,9 @@
 Convert your Markdown documentation to beautiful PDFs with:
 - ✅ Professional formatting (headers, tables, code blocks)
 - ✅ **Automatic Mermaid diagram rendering** (diagrams as PNG images)
+- ✅ **Page numbering** (centered footer on all pages)
+- ✅ **Multiple page sizes** (A4, A3, Letter)
+- ✅ **Portrait & Landscape** orientation support
 - ✅ Syntax highlighting for code blocks
 - ✅ Customizable styling
 - ✅ CLI and Python API
@@ -54,8 +57,17 @@ md2pdf document.md -o report.pdf
 # Custom title
 md2pdf document.md --title "Project Report"
 
+# Page size and orientation
+md2pdf document.md --page-size letter --orientation landscape
+
+# Disable page numbers
+md2pdf document.md --no-page-numbers
+
 # Disable Mermaid rendering (faster, text-only diagrams)
 md2pdf document.md --no-mermaid
+
+# Combine options
+md2pdf document.md -o report.pdf --page-size a3 --orientation landscape --title "Report"
 ```
 
 ### Python API Usage
@@ -67,11 +79,22 @@ from md2pdf import convert_markdown_to_pdf
 with open("document.md", "r") as f:
     markdown_content = f.read()
 
-# Convert to PDF
+# Basic conversion
 convert_markdown_to_pdf(
     markdown_content,
     "output.pdf",
     title="My Document"
+)
+
+# With custom page settings
+convert_markdown_to_pdf(
+    markdown_content,
+    "report.pdf",
+    title="Annual Report",
+    page_size="letter",           # Options: 'a4', 'a3', 'letter'
+    orientation="landscape",       # Options: 'portrait', 'landscape'
+    page_numbers=True,             # Enable/disable page numbering
+    enable_mermaid=True            # Enable/disable Mermaid rendering
 )
 ```
 
@@ -107,12 +130,15 @@ graph LR
 
 ### PDF Styling
 
-- A4 page size with 2cm margins
+- Multiple page sizes: **A4**, **A3**, **Letter**
+- **Portrait** and **Landscape** orientation support
+- **Page numbering** in footer (centered, customizable)
 - Professional color scheme
 - Tables with alternating row colors
 - Code blocks with light gray background
 - Headers with colored borders
 - Optimized font sizes (10pt body, 7pt code)
+- 2cm margins on all sides
 
 ---
 
@@ -293,7 +319,7 @@ MIT License - see LICENSE file for details
 
 ---
 
-**Version**: 1.0.0
-**Published**: 2025-10-14
+**Version**: 1.1.0
+**Published**: 2025-10-20
 **PyPI**: https://pypi.org/project/md2pdf-mermaid/
 **Status**: Production Ready ✅

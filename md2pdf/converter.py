@@ -7,15 +7,15 @@ Professional PDF generation from Markdown with Mermaid diagram support
 import os
 import re
 import tempfile
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, A3, LETTER, landscape, portrait
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    Preformatted, Image
+    Preformatted, Image, PageBreak
 )
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_LEFT
+from reportlab.lib.enums import TA_LEFT, TA_CENTER
 
 try:
     from .mermaid import render_mermaid_to_png, is_playwright_available
@@ -115,8 +115,57 @@ def parse_markdown(md_text):
     return elements
 
 
+def get_page_size(size='a4', orientation='portrait'):
+    """
+    Get page size with specified orientation
+
+    Args:
+        size: Page size name ('a4', 'a3', 'letter')
+        orientation: Page orientation ('portrait', 'landscape')
+
+    Returns:
+        Tuple of (width, height) for the page size
+    """
+    size_map = {
+        'a4': A4,
+        'a3': A3,
+        'letter': LETTER
+    }
+
+    page_size = size_map.get(size.lower(), A4)
+
+    if orientation.lower() == 'landscape':
+        return landscape(page_size)
+    else:
+        return portrait(page_size)
+
+
+def add_page_number(canvas, doc):
+    """
+    Add page number to the bottom center of each page
+
+    Args:
+        canvas: ReportLab canvas object
+        doc: Document object
+    """
+    page_num = canvas.getPageNumber()
+    text = f"Page {page_num}"
+    canvas.saveState()
+    canvas.setFont('Helvetica', 9)
+    canvas.setFillColor(colors.HexColor('#666666'))
+    # Use page width from canvas to center properly regardless of page size
+    page_width = canvas._pagesize[0]
+    canvas.drawCentredString(
+        page_width / 2,  # x position (center of page)
+        1.5 * cm,        # y position (bottom margin)
+        text
+    )
+    canvas.restoreState()
+
+
 def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
-                            enable_mermaid=True):
+                            enable_mermaid=True, page_numbers=True,
+                            page_size='a4', orientation='portrait'):
     """
     Convert Markdown text to PDF
 
@@ -125,6 +174,9 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         output_path: Path to output PDF file
         title: Document title
         enable_mermaid: Enable Mermaid diagram rendering (default: True)
+        page_numbers: Enable page numbering in footer (default: True)
+        page_size: Page size ('a4', 'a3', 'letter') (default: 'a4')
+        orientation: Page orientation ('portrait', 'landscape') (default: 'portrait')
 
     Returns:
         dict with keys:
@@ -142,10 +194,13 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
     mermaid_rendered = 0
     playwright_available = is_playwright_available()
 
+    # Get page size with orientation
+    final_pagesize = get_page_size(page_size, orientation)
+
     # Create PDF
     doc = SimpleDocTemplate(
         output_path,
-        pagesize=A4,
+        pagesize=final_pagesize,
         rightMargin=2*cm,
         leftMargin=2*cm,
         topMargin=2*cm,
@@ -323,8 +378,11 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         elif elem_type == 'space':
             story.append(Spacer(1, 0.2*cm))
 
-    # Build PDF
-    doc.build(story)
+    # Build PDF with page numbers
+    if page_numbers:
+        doc.build(story, onFirstPage=add_page_number, onLaterPages=add_page_number)
+    else:
+        doc.build(story)
 
     # Cleanup temporary files
     for tmp_file in temp_files:

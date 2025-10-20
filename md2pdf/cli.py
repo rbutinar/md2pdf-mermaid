@@ -16,10 +16,12 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  md2pdf document.md                    # Convert to document.pdf
-  md2pdf doc.md -o report.pdf          # Custom output name
-  md2pdf doc.md --no-mermaid           # Disable Mermaid rendering
-  md2pdf doc.md --title "My Report"   # Custom title
+  md2pdf document.md                           # Convert to document.pdf
+  md2pdf doc.md -o report.pdf                 # Custom output name
+  md2pdf doc.md --no-mermaid                  # Disable Mermaid rendering
+  md2pdf doc.md --title "My Report"          # Custom title
+  md2pdf doc.md --page-size letter           # Use Letter size
+  md2pdf doc.md --orientation landscape      # Landscape orientation
 
 For more information: https://github.com/rbutinar/md2pdf-mermaid
         """
@@ -43,9 +45,26 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
         help="Document title (default: filename)"
     )
     parser.add_argument(
+        "--page-size",
+        choices=["a4", "a3", "letter"],
+        default="a4",
+        help="Page size (default: a4)"
+    )
+    parser.add_argument(
+        "--orientation",
+        choices=["portrait", "landscape"],
+        default="portrait",
+        help="Page orientation (default: portrait)"
+    )
+    parser.add_argument(
+        "--no-page-numbers",
+        action="store_true",
+        help="Disable page numbering"
+    )
+    parser.add_argument(
         "-v", "--version",
         action="version",
-        version="md2pdf 1.0.0"
+        version="md2pdf 1.1.0"
     )
 
     args = parser.parse_args()
@@ -76,7 +95,10 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
             markdown_content,
             output_path,
             title=title,
-            enable_mermaid=not args.no_mermaid
+            enable_mermaid=not args.no_mermaid,
+            page_numbers=not args.no_page_numbers,
+            page_size=args.page_size,
+            orientation=args.orientation
         )
 
         # Success
