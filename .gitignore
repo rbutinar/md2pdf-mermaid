@@ -56,6 +56,12 @@ tmp/
 # Test files (don't publish)
 test_*.md
 test_*.py
+TEST_*.md
+TALEND_TEST_*.pdf
+
+# Temporary files
+SUMMARY.txt
+*.tmp
 
 # OS
 .DS_Store
