@@ -8,6 +8,6 @@ Mermaid diagram rendering.
 from .converter import convert_markdown_to_pdf, parse_markdown
 from .mermaid import render_mermaid_to_png
 
-__version__ = "1.0.0"
+__version__ = "1.3.1"
 __author__ = "Roberto Butinar"
 __all__ = ["convert_markdown_to_pdf", "parse_markdown", "render_mermaid_to_png"]

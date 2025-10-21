@@ -8,13 +8,16 @@
 
 Convert your Markdown documentation to beautiful PDFs with:
 - ✅ Professional formatting (headers, tables, code blocks)
-- ✅ **Automatic Mermaid diagram rendering** (diagrams as PNG images)
+- ✅ **Automatic Mermaid diagram rendering** (high-quality PNG images)
+- ✅ **Mermaid theme support** (default, neutral, dark, forest, base)
+- ✅ **Mermaid quality control** (resolution scale 1-4)
 - ✅ **Full Unicode/UTF-8 support** (multilingual text, special characters)
 - ✅ **Customizable fonts** (Arial, DejaVu, Helvetica, or custom TTF)
 - ✅ **Page numbering** (centered footer on all pages)
 - ✅ **Multiple page sizes** (A4, A3, Letter)
 - ✅ **Portrait & Landscape** orientation support
 - ✅ **Bold & inline code** formatting in lists
+- ✅ **Hyperlink handling** (converted to plain text for readability)
 - ✅ Syntax highlighting for code blocks
 - ✅ Customizable styling
 - ✅ CLI and Python API
@@ -66,6 +69,9 @@ md2pdf document.md --page-size letter --orientation landscape
 # Custom font (arial, dejavu, helvetica, or path to .ttf)
 md2pdf document.md --font arial
 
+# High-quality Mermaid diagrams with custom theme
+md2pdf document.md --mermaid-scale 2 --mermaid-theme forest
+
 # Disable page numbers
 md2pdf document.md --no-page-numbers
 
@@ -73,7 +79,7 @@ md2pdf document.md --no-page-numbers
 md2pdf document.md --no-mermaid
 
 # Combine options
-md2pdf document.md -o report.pdf --page-size a3 --orientation landscape --title "Report" --font arial
+md2pdf document.md -o report.pdf --page-size a3 --orientation landscape --title "Report" --font arial --mermaid-theme neutral
 ```
 
 ### Python API Usage
@@ -101,7 +107,9 @@ convert_markdown_to_pdf(
     orientation="landscape",       # Options: 'portrait', 'landscape'
     page_numbers=True,             # Enable/disable page numbering
     enable_mermaid=True,           # Enable/disable Mermaid rendering
-    font_name="arial"              # Font: None (auto), 'arial', 'dejavu', 'helvetica', or .ttf path
+    font_name="arial",             # Font: None (auto), 'arial', 'dejavu', 'helvetica', or .ttf path
+    mermaid_scale=2,               # Mermaid quality: 1-4 (default: 2)
+    mermaid_theme="forest"         # Mermaid theme: 'default', 'neutral', 'dark', 'forest', 'base'
 )
 ```
 
@@ -117,8 +125,9 @@ convert_markdown_to_pdf(
 - Tables with colored headers
 - Code blocks with syntax highlighting
 - Horizontal rules
-- **Mermaid diagrams** (rendered as high-quality images)
-- **Full Unicode/UTF-8** support (multilingual, emoji, special characters)
+- **Mermaid diagrams** (rendered as high-quality images with customizable themes)
+- **Full Unicode/UTF-8** support (multilingual text, special characters)
+- **Automatic emoji removal** (for PDF compatibility)
 
 ### Mermaid Diagrams
 
@@ -135,6 +144,12 @@ graph LR
 ````
 
 **Becomes a visual diagram in the PDF!**
+
+**Mermaid Features:**
+- **Customizable themes**: `default`, `neutral`, `dark`, `forest`, `base`
+- **Quality control**: Scale factor 1-4 for resolution (default: 2 = high quality)
+- **Canvas-based rendering**: Exact pixel dimensions, no whitespace issues
+- **Full-width diagrams**: Optimized for readability (90% page width)
 
 ### PDF Styling
 
@@ -330,18 +345,40 @@ MIT License - see LICENSE file for details
 
 ---
 
-**Version**: 1.2.0
-**Published**: 2025-10-20
+**Version**: 1.3.0
+**Published**: 2025-10-21
 **PyPI**: https://pypi.org/project/md2pdf-mermaid/
-**Status**: Production Ready ✅
+**Status**: Stable Release 🎉
 
 ---
 
-## 🆕 What's New in v1.2.0
+## 🆕 What's New
 
-- ✨ **Full Unicode/UTF-8 support** - Multilingual text, emoji, special characters (•, è, à, etc.)
+### v1.3.0 (2025-10-21)
+
+**New Features:**
+- ✨ **Mermaid theme support** - Choose from 5 color themes: `default`, `neutral`, `dark`, `forest`, `base`
+- ✨ **Mermaid quality control** - Scale factor 1-4 for diagram resolution (CLI: `--mermaid-scale`, API: `mermaid_scale`)
+- ✨ **Automatic emoji removal** - Emoji characters are removed for PDF compatibility (clean text output)
+- ✨ **Hyperlink handling** - Markdown hyperlinks `[text](url)` are converted to plain text for readability
+
+**Bug Fixes:**
+- 🐛 **Fixed Mermaid diagram sizing** - Canvas-based rendering ensures exact dimensions, no whitespace issues
+- 🐛 **Fixed diagram quality** - High-resolution rendering (2x scale by default) for crisp, professional diagrams
+- 🐛 **Improved spacing** - Better margins around Mermaid diagrams (0.3cm before, 0.5cm after)
+- 🐛 **Fixed hyperlink rendering** - Links no longer cause rendering issues in table of contents
+
+**Breaking Changes:**
+- 📝 Emoji are now automatically removed from text (previously rendered as � or boxes)
+- 📝 Hyperlinks are now converted to plain text (full clickable support planned for future version)
+
+---
+
+### v1.2.0 (2025-10-20)
+
+- ✨ **Full Unicode/UTF-8 support** - Multilingual text, special characters (•, è, à, etc.)
 - ✨ **Customizable fonts** - Choose Arial, DejaVu, Helvetica, or provide custom TTF file
 - ✨ **Bold & inline code in lists** - Full markdown formatting support in bullet/numbered lists
-- ✨ **Larger Mermaid diagrams** - Now use full page width for better readability
+- ✨ **Larger Mermaid diagrams** - Use full page width for better readability
 - 🐛 **Fixed encoding issues** - Bullet characters and accented text now display correctly
 - 🔧 **Automatic font detection** - Auto-selects best Unicode font for your system

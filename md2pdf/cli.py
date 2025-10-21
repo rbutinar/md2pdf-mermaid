@@ -7,6 +7,7 @@ import argparse
 import sys
 from pathlib import Path
 from .converter import convert_markdown_to_pdf
+from . import __version__
 
 
 def main():
@@ -68,9 +69,22 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
         help="Font to use (auto=auto-detect, helvetica=standard, arial=Windows, dejavu=Linux, or path to .ttf file)"
     )
     parser.add_argument(
+        "--mermaid-scale",
+        type=int,
+        default=2,
+        choices=[1, 2, 3, 4],
+        help="Mermaid diagram resolution scale (1=standard, 2=high quality, 3=very high, 4=ultra). Default: 2"
+    )
+    parser.add_argument(
+        "--mermaid-theme",
+        choices=["default", "neutral", "dark", "forest", "base"],
+        default="default",
+        help="Mermaid diagram color theme (default, neutral, dark, forest, base). Default: default"
+    )
+    parser.add_argument(
         "-v", "--version",
         action="version",
-        version="md2pdf 1.2.0"
+        version=f"md2pdf {__version__}"
     )
 
     args = parser.parse_args()
@@ -105,7 +119,9 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
             page_numbers=not args.no_page_numbers,
             page_size=args.page_size,
             orientation=args.orientation,
-            font_name=args.font if args.font and args.font.lower() != 'auto' else None
+            font_name=args.font if args.font and args.font.lower() != 'auto' else None,
+            mermaid_scale=args.mermaid_scale,
+            mermaid_theme=args.mermaid_theme
         )
 
         # Success

@@ -2,7 +2,33 @@
 
 This document outlines the planned features and improvements for md2pdf-mermaid.
 
-## Version 1.1.0 (Planned)
+## Recently Completed
+
+### v1.3.1 (2025-10-21) - Patch Release ✅
+- [x] Extended emoji removal to cover Miscellaneous Technical symbols (⏰, ⏱️, ⏲️)
+- [x] Fixed Unicode range 0x2300-0x23FF handling in `remove_emoji()`
+
+### v1.3.0 (2025-10-21) ✅
+- [x] Mermaid theme support (5 themes: default, neutral, dark, forest, base)
+- [x] Mermaid quality/resolution control (--mermaid-scale flag)
+- [x] Automatic emoji removal for PDF compatibility
+- [x] Hyperlink handling (convert to plain text)
+- [x] Fixed Mermaid diagram sizing and quality issues
+
+### v1.2.0 (2025-10-20) ✅
+- [x] Full Unicode/UTF-8 support with automatic font detection
+- [x] Customizable font selection (Arial, DejaVu, Helvetica, custom TTF)
+- [x] Bold and inline code formatting in lists
+- [x] Full-width Mermaid diagrams
+
+### v1.1.0 (2025-10-20) ✅
+- [x] Page numbering in PDF footer
+- [x] Page size options (A4, A3, Letter)
+- [x] Page orientation options (Portrait, Landscape)
+
+## Future Versions
+
+## Version 1.4.0 (Planned)
 
 ### Custom Mermaid Themes
 - [ ] `--mermaid-theme dark|forest|neutral|default` - Built-in theme support
@@ -42,6 +68,14 @@ This document outlines the planned features and improvements for md2pdf-mermaid.
 - [ ] Clickable TOC links in PDF
 
 **Rationale**: Essential for long documentation and reports
+
+### Hyperlink Support
+- [ ] Clickable hyperlinks in PDF (internal anchors)
+- [ ] External URL links
+- [ ] Cross-references between sections
+- [ ] Automatic link styling
+
+**Rationale**: Currently hyperlinks are removed for readability. Full support requires ReportLab anchor implementation for professional interactive PDFs.
 
 ## Version 1.2.0 (Future)
 
