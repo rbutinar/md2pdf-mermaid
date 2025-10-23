@@ -27,10 +27,19 @@ except ImportError:
     def is_playwright_available():
         return False
 
+try:
+    from .emoji_handler import EmojiHandler
+    EMOJI_HANDLER_AVAILABLE = True
+except ImportError:
+    EMOJI_HANDLER_AVAILABLE = False
+
 
 def remove_emoji(text):
     """
     Remove emoji characters from text for PDF compatibility.
+
+    DEPRECATED: This function is kept for backward compatibility.
+    New code should use EmojiHandler from emoji_handler.py
 
     ReportLab doesn't natively support color emoji fonts, so we remove them
     to keep the document clean and readable.
@@ -65,6 +74,26 @@ def remove_emoji(text):
             result.append(char)
 
     return ''.join(result)
+
+
+def process_emoji(text, emoji_handler=None):
+    """
+    Process emoji in text using EmojiHandler if available, otherwise remove them.
+
+    Args:
+        text: Input text that may contain emoji
+        emoji_handler: EmojiHandler instance, or None to use old remove_emoji
+
+    Returns:
+        Processed text
+    """
+    if not text:
+        return text
+
+    if emoji_handler:
+        return emoji_handler.process_text(text)
+    else:
+        return remove_emoji(text)
 
 
 def remove_hyperlinks(text):
@@ -324,7 +353,7 @@ def add_page_number(canvas, doc):
 def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
                             enable_mermaid=True, page_numbers=True,
                             page_size='a4', orientation='portrait', font_name=None,
-                            mermaid_scale=2, mermaid_theme='default'):
+                            mermaid_scale=2, mermaid_theme='default', emoji_strategy='auto'):
     """
     Convert Markdown text to PDF
 
@@ -341,6 +370,12 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         mermaid_scale: Device scale factor for Mermaid rendering (default: 2)
                       Higher values produce sharper diagrams but larger files
                       Recommended: 2 (standard quality), 3 (high quality)
+        mermaid_theme: Mermaid diagram theme (default: 'default')
+        emoji_strategy: Emoji rendering strategy (default: 'auto')
+                       - 'auto': Try pilmoji, fallback to remove
+                       - 'pilmoji': Convert emoji to colored images (requires pilmoji)
+                       - 'remove': Remove emoji, keep simple symbols (arrows, checkmarks)
+                       - 'keep': Keep all emoji (requires Unicode font support)
 
     Returns:
         dict with keys:
@@ -417,6 +452,15 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
                 break
             except:
                 continue
+
+    # Initialize emoji handler
+    emoji_handler = None
+    if EMOJI_HANDLER_AVAILABLE:
+        try:
+            emoji_handler = EmojiHandler(strategy=emoji_strategy)
+        except Exception as e:
+            print(f"Warning: Failed to initialize EmojiHandler: {e}")
+            emoji_handler = None
 
     # Parse markdown
     elements = parse_markdown(markdown_text)
@@ -538,7 +582,7 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
                 nested_diagram_idx = check_idx
 
         if elem_type == 'h1':
-            content = remove_emoji(content)
+            content = process_emoji(content, emoji_handler)
             content = remove_hyperlinks(content)
             story.append(Paragraph(content, styles['CustomH1']))
             i += 1
@@ -546,13 +590,13 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         elif elem_type == 'h2' and h2_has_nested_diagram:
             # Keep H2 + H3/H4 + diagram together
             group = []
-            content = remove_emoji(content)
+            content = process_emoji(content, emoji_handler)
             content = remove_hyperlinks(content)
             group.append(Paragraph(content, styles['CustomH2']))
 
             # Add the H3/H4 title
             nested_h_type, nested_h_content = elements[nested_h_idx]
-            nested_h_content = remove_emoji(nested_h_content)
+            nested_h_content = process_emoji(nested_h_content, emoji_handler)
             nested_h_content = remove_hyperlinks(nested_h_content)
             nested_style = styles['CustomH3'] if nested_h_type == 'h3' else styles['Heading4']
             group.append(Paragraph(nested_h_content, nested_style))
@@ -588,7 +632,7 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
             i = nested_diagram_idx + 1
 
         elif elem_type == 'h2':
-            content = remove_emoji(content)
+            content = process_emoji(content, emoji_handler)
             content = remove_hyperlinks(content)
             story.append(Paragraph(content, styles['CustomH2']))
             i += 1
@@ -596,7 +640,7 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
         elif elem_type in ['h3', 'h4'] and next_is_diagram:
             # Keep title together with following diagram
             group = []
-            content = remove_emoji(content)
+            content = process_emoji(content, emoji_handler)
             content = remove_hyperlinks(content)
             title_style = styles['CustomH3'] if elem_type == 'h3' else styles['Heading4']
             group.append(Paragraph(content, title_style))
@@ -634,21 +678,21 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
             i = next_idx + 1
 
         elif elem_type == 'h3':
-            content = remove_emoji(content)
+            content = process_emoji(content, emoji_handler)
             content = remove_hyperlinks(content)
             story.append(Paragraph(content, styles['CustomH3']))
             i += 1
 
         elif elem_type == 'h4':
-            content = remove_emoji(content)
+            content = process_emoji(content, emoji_handler)
             content = remove_hyperlinks(content)
             story.append(Paragraph(content, styles['Heading4']))
             i += 1
 
         elif elem_type == 'p':
             # Handle inline formatting
-            # Remove emoji first
-            content = remove_emoji(content)
+            # Process emoji first
+            content = process_emoji(content, emoji_handler)
             # Remove hyperlinks
             content = remove_hyperlinks(content)
             # Escape XML special characters
@@ -661,8 +705,8 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
 
         elif elem_type == 'list':
             # Handle inline formatting
-            # Remove emoji first
-            content = remove_emoji(content)
+            # Process emoji first
+            content = process_emoji(content, emoji_handler)
             # Remove hyperlinks
             content = remove_hyperlinks(content)
             # Escape XML special characters
@@ -675,8 +719,8 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
 
         elif elem_type == 'numlist':
             # Handle inline formatting
-            # Remove emoji first
-            content = remove_emoji(content)
+            # Process emoji first
+            content = process_emoji(content, emoji_handler)
             # Remove hyperlinks
             content = remove_hyperlinks(content)
             # Escape XML special characters
@@ -807,6 +851,13 @@ def convert_markdown_to_pdf(markdown_text, output_path, title="Document",
     for tmp_file in temp_files:
         try:
             os.unlink(tmp_file)
+        except:
+            pass
+
+    # Cleanup emoji handler temporary files
+    if emoji_handler:
+        try:
+            emoji_handler.cleanup()
         except:
             pass
 
