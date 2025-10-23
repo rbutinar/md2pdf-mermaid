@@ -108,8 +108,15 @@ def render_mermaid_to_png(mermaid_code, output_path, width=1400, height=1000, sc
                 const aspectRatio = naturalHeight / naturalWidth;
 
                 // Calculate target dimensions (width * scale for quality)
-                const targetWidth = {width} * {scale};
-                const targetHeight = targetWidth * aspectRatio;
+                let targetWidth = {width} * {scale};
+                let targetHeight = targetWidth * aspectRatio;
+
+                // Limit maximum height to prevent very tall diagrams
+                const maxHeight = 2400;  // Max height in pixels (fits in one PDF page)
+                if (targetHeight > maxHeight) {{
+                    targetHeight = maxHeight;
+                    targetWidth = targetHeight / aspectRatio;
+                }}
 
                 // Set viewBox to content bounds (removes whitespace)
                 svg.setAttribute('viewBox', `${{bbox.x}} ${{bbox.y}} ${{bbox.width}} ${{bbox.height}}`);

@@ -4,22 +4,18 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/md2pdf-mermaid.svg)](https://pypi.org/project/md2pdf-mermaid/)
 [![License](https://img.shields.io/pypi/l/md2pdf-mermaid.svg)](https://github.com/rbutinar/md2pdf-mermaid/blob/master/LICENSE)
 
-**Professional Markdown to PDF converter with automatic Mermaid diagram rendering**
+**Professional Markdown to PDF converter with emoji support and automatic Mermaid diagram rendering**
 
 Convert your Markdown documentation to beautiful PDFs with:
-- ✅ Professional formatting (headers, tables, code blocks)
+- ✅ **Full emoji support** 🎉 (colored, native rendering)
 - ✅ **Automatic Mermaid diagram rendering** (high-quality PNG images)
-- ✅ **Mermaid theme support** (default, neutral, dark, forest, base)
-- ✅ **Mermaid quality control** (resolution scale 1-4)
-- ✅ **Full Unicode/UTF-8 support** (multilingual text, special characters)
-- ✅ **Customizable fonts** (Arial, DejaVu, Helvetica, or custom TTF)
-- ✅ **Page numbering** (centered footer on all pages)
+- ✅ **Table of contents** generation (with `[TOC]` marker)
+- ✅ **Page numbering** (automatic footer pagination)
+- ✅ **Professional formatting** (headers, tables, code blocks)
 - ✅ **Multiple page sizes** (A4, A3, Letter)
 - ✅ **Portrait & Landscape** orientation support
-- ✅ **Bold & inline code** formatting in lists
-- ✅ **Hyperlink handling** (converted to plain text for readability)
+- ✅ **Full Unicode/UTF-8 support** (multilingual text, special characters)
 - ✅ Syntax highlighting for code blocks
-- ✅ Customizable styling
 - ✅ CLI and Python API
 - ✅ Fast and reliable
 
@@ -33,7 +29,7 @@ Convert your Markdown documentation to beautiful PDFs with:
 # From PyPI (recommended)
 pip install md2pdf-mermaid
 
-# Install Playwright browser (required for Mermaid rendering)
+# Install Playwright browser (required for rendering)
 playwright install chromium
 ```
 
@@ -54,7 +50,7 @@ See [WSL_SETUP.md](WSL_SETUP.md) for details.
 ### Command Line Usage
 
 ```bash
-# Basic conversion
+# Basic conversion (emoji and Mermaid just work!)
 md2pdf document.md
 
 # Custom output name
@@ -66,50 +62,54 @@ md2pdf document.md --title "Project Report"
 # Page size and orientation
 md2pdf document.md --page-size letter --orientation landscape
 
-# Custom font (arial, dejavu, helvetica, or path to .ttf)
-md2pdf document.md --font arial
-
 # High-quality Mermaid diagrams with custom theme
-md2pdf document.md --mermaid-scale 2 --mermaid-theme forest
+md2pdf document.md --mermaid-scale 3 --mermaid-theme forest
 
-# Disable page numbers
-md2pdf document.md --no-page-numbers
+# Use legacy ReportLab engine (faster, no emoji)
+md2pdf document.md --engine reportlab
 
 # Disable Mermaid rendering (faster, text-only diagrams)
 md2pdf document.md --no-mermaid
 
 # Combine options
-md2pdf document.md -o report.pdf --page-size a3 --orientation landscape --title "Report" --font arial --mermaid-theme neutral
+md2pdf document.md -o report.pdf --page-size a3 --title "Report"
 ```
 
 ### Python API Usage
 
 ```python
-from md2pdf import convert_markdown_to_pdf
+from md2pdf import convert_markdown_to_pdf_html
 
 # Read markdown file
 with open("document.md", "r") as f:
     markdown_content = f.read()
 
-# Basic conversion
-convert_markdown_to_pdf(
+# Basic conversion (emoji supported!)
+result = convert_markdown_to_pdf_html(
     markdown_content,
     "output.pdf",
     title="My Document"
 )
 
 # With custom page settings
-convert_markdown_to_pdf(
+result = convert_markdown_to_pdf_html(
     markdown_content,
     "report.pdf",
     title="Annual Report",
-    page_size="letter",           # Options: 'a4', 'a3', 'letter'
-    orientation="landscape",       # Options: 'portrait', 'landscape'
-    page_numbers=True,             # Enable/disable page numbering
-    enable_mermaid=True,           # Enable/disable Mermaid rendering
-    font_name="arial",             # Font: None (auto), 'arial', 'dejavu', 'helvetica', or .ttf path
-    mermaid_scale=2,               # Mermaid quality: 1-4 (default: 2)
-    mermaid_theme="forest"         # Mermaid theme: 'default', 'neutral', 'dark', 'forest', 'base'
+    page_size="A4",                # Options: 'A4', 'A3', 'Letter'
+    orientation="portrait",         # Options: 'portrait', 'landscape'
+    enable_mermaid=True            # Enable/disable Mermaid rendering
+)
+
+# Legacy ReportLab engine (for advanced PDF features)
+from md2pdf import convert_markdown_to_pdf
+
+convert_markdown_to_pdf(
+    markdown_content,
+    "output.pdf",
+    page_numbers=True,
+    font_name="arial",
+    emoji_strategy="remove"  # ReportLab doesn't support emoji
 )
 ```
 
@@ -117,19 +117,43 @@ convert_markdown_to_pdf(
 
 ## 📋 Features
 
-### Markdown Support
+### 🎨 Two Rendering Engines
+
+#### HTML Engine (Default) - Recommended ⭐
+- **Full emoji support** 🎉 - Colored emoji render natively
+- **Modern CSS styling** - Browser-quality rendering
+- **Table of contents** - Add `[TOC]` anywhere in your markdown
+- **Page numbers** - Automatic footer pagination (X / Y format)
+- **Best quality** - Superior rendering for modern documents
+
+#### ReportLab Engine (Legacy) - For Special Cases
+- **Custom fonts** - TTF font support
+- **Advanced PDF features** - Custom headers/footers, bookmarks
+- **Smaller file size** - Slightly more compact
+- **No emoji** - Emoji are removed for compatibility
+
+```bash
+# Use HTML engine (default)
+md2pdf document.md
+
+# Use ReportLab engine
+md2pdf document.md --engine reportlab --emoji-strategy remove
+```
+
+### 📝 Markdown Support
 
 - **Headers** (H1-H4) with colored borders
 - **Bold**, *italic*, `inline code` (including in lists!)
+- **Emoji** 🎉 ✅ ❌ 🔴 🟢 (full color support with HTML engine)
 - Bullet lists and numbered lists with **full formatting support**
+- **Table of contents** - Just add `[TOC]` in your markdown!
 - Tables with colored headers
 - Code blocks with syntax highlighting
 - Horizontal rules
-- **Mermaid diagrams** (rendered as high-quality images with customizable themes)
+- **Mermaid diagrams** (rendered as high-quality images)
 - **Full Unicode/UTF-8** support (multilingual text, special characters)
-- **Automatic emoji removal** (for PDF compatibility)
 
-### Mermaid Diagrams
+### 📊 Mermaid Diagrams
 
 Automatically renders Mermaid diagrams as high-quality PNG images:
 
@@ -148,23 +172,21 @@ graph LR
 **Mermaid Features:**
 - **Customizable themes**: `default`, `neutral`, `dark`, `forest`, `base`
 - **Quality control**: Scale factor 1-4 for resolution (default: 2 = high quality)
-- **Canvas-based rendering**: Exact pixel dimensions, no whitespace issues
-- **Full-width diagrams**: Optimized for readability (90% page width)
+- **Automatic sizing**: Diagrams fit properly on pages
+- **Full-width diagrams**: Optimized for readability
 
-### PDF Styling
+### 📄 PDF Styling
 
 - Multiple page sizes: **A4**, **A3**, **Letter**
 - **Portrait** and **Landscape** orientation support
-- **Page numbering** in footer (centered, customizable)
-- **Customizable fonts**: Arial (Windows), DejaVu (Linux), Helvetica, or custom TTF
-- **Unicode/UTF-8** support with automatic font detection
+- **Automatic page numbering** in footer (HTML engine)
+- **Table of contents** support (HTML engine)
 - Professional color scheme
 - Tables with alternating row colors
 - Code blocks with light gray background
 - Headers with colored borders
-- Optimized font sizes (10pt body, 7pt code)
 - 2cm margins on all sides
-- **Full-width Mermaid diagrams** (optimized for readability)
+- **Full emoji rendering** (HTML engine)
 
 ---
 
@@ -172,21 +194,29 @@ graph LR
 
 - Python 3.8+
 - Chromium browser (via Playwright, ~250 MB)
-- reportlab, playwright, pillow (installed automatically)
+- playwright, reportlab, markdown, pillow (installed automatically)
 
 ---
 
 ## 📚 Use Cases
 
-### 1. Technical Documentation
+### 1. Technical Documentation with Emoji
 
-Convert your project documentation to PDF for:
-- Client deliverables
-- Internal documentation
-- Architecture diagrams (Mermaid)
-- API documentation
+Convert your modern documentation to PDF:
+```markdown
+# API Documentation 🚀
 
-### 2. Reports and Presentations
+## Quick Start ✅
+
+Install the package and get started! 🎉
+
+### Features
+- ✅ Easy to use
+- ⚡ Fast performance
+- 🔒 Secure by default
+```
+
+### 2. Architecture Diagrams
 
 Create professional reports with:
 - Data flow diagrams
@@ -211,10 +241,28 @@ Automatically generate PDFs in your pipeline:
 
 ## 💡 Advanced Usage
 
+### Table of Contents
+
+Add a table of contents anywhere in your markdown:
+
+```markdown
+# My Document
+
+[TOC]
+
+## Chapter 1
+Content here...
+
+## Chapter 2
+More content...
+```
+
+The `[TOC]` marker will be replaced with a clickable table of contents!
+
 ### Batch Conversion
 
 ```python
-from md2pdf import convert_markdown_to_pdf
+from md2pdf import convert_markdown_to_pdf_html
 from pathlib import Path
 
 # Convert all markdown files
@@ -224,29 +272,34 @@ for md_file in Path("docs").glob("*.md"):
     with open(md_file, "r") as f:
         content = f.read()
 
-    convert_markdown_to_pdf(content, str(pdf_file), title=md_file.stem)
+    convert_markdown_to_pdf_html(content, str(pdf_file), title=md_file.stem)
     print(f"✓ Created {pdf_file}")
 ```
 
-### Disable Mermaid Rendering
-
-If Playwright is not available or you want faster conversion:
+### Engine Selection
 
 ```python
+# HTML engine (default) - emoji support
+from md2pdf import convert_markdown_to_pdf_html
+
+result = convert_markdown_to_pdf_html(
+    markdown_text,
+    "output.pdf",
+    enable_mermaid=True
+)
+# result['emoji_support'] == True
+
+# ReportLab engine - advanced PDF features
+from md2pdf import convert_markdown_to_pdf
+
 convert_markdown_to_pdf(
     markdown_text,
     "output.pdf",
-    enable_mermaid=False  # Diagrams shown as code blocks
+    page_numbers=True,
+    font_name="arial",
+    emoji_strategy="remove"
 )
 ```
-
-### Custom Styling
-
-The converter uses reportlab's styling system. You can modify styles by:
-
-1. Fork the repository
-2. Edit `md2pdf/converter.py`
-3. Customize colors, fonts, sizes in the `convert_markdown_to_pdf()` function
 
 ---
 
@@ -270,7 +323,14 @@ The PDF file is open in a viewer. Close it first, then try again.
 
 1. Check Playwright is installed: `python -c "import playwright"`
 2. Check Chromium is installed: `playwright install --force chromium`
-3. Try disabling and re-enabling Mermaid: `md2pdf file.md --no-mermaid` (to verify other features work)
+3. Try disabling and re-enabling Mermaid: `md2pdf file.md --no-mermaid`
+
+### Emoji Not Rendering
+
+If you're using the ReportLab engine, emoji are not supported. Switch to HTML engine:
+```bash
+md2pdf document.md --engine html  # or just: md2pdf document.md (HTML is default)
+```
 
 ### WSL: "Host system is missing dependencies to run browsers"
 
@@ -284,19 +344,7 @@ venv/Scripts/playwright.exe install chromium
 venv/Scripts/md2pdf.exe document.md  # Works perfectly!
 ```
 
-**Alternative** (requires sudo): Install Linux dependencies:
-```bash
-sudo apt-get install -y libnss3 libnspr4 libatk1.0-0 libgbm1 libasound2t64
-```
-
 See [WSL_SETUP.md](WSL_SETUP.md) for complete instructions.
-
-### Large File Conversion Slow
-
-Mermaid rendering takes ~10-15 seconds per diagram. For documents with many diagrams:
-- Use `--no-mermaid` flag for faster preview
-- Run conversion in background
-- Consider caching rendered diagrams (future feature)
 
 ---
 
@@ -323,6 +371,7 @@ MIT License - see LICENSE file for details
 - [mermaid](https://mermaid.js.org/) - Diagram syntax
 - [reportlab](https://www.reportlab.com/) - PDF generation
 - [playwright](https://playwright.dev/) - Browser automation
+- [python-markdown](https://python-markdown.github.io/) - Markdown processing
 
 ---
 
@@ -335,18 +384,19 @@ MIT License - see LICENSE file for details
 
 ## 🎯 Roadmap
 
-- [ ] Support for more Mermaid diagram types
+- [x] Full emoji support (v1.4.0)
+- [x] Table of contents generation (v1.4.0)
+- [x] Page numbering (v1.4.0)
 - [ ] Custom CSS themes
 - [ ] Image embedding from URLs
-- [ ] Table of contents generation
 - [ ] Header/footer customization
 - [ ] Multi-column layouts
 - [ ] PDF metadata (author, keywords, etc.)
 
 ---
 
-**Version**: 1.3.0
-**Published**: 2025-10-21
+**Version**: 1.4.0
+**Published**: 2025-10-23
 **PyPI**: https://pypi.org/project/md2pdf-mermaid/
 **Status**: Stable Release 🎉
 
@@ -354,31 +404,56 @@ MIT License - see LICENSE file for details
 
 ## 🆕 What's New
 
-### v1.3.0 (2025-10-21)
+### v1.4.0 (2025-10-23) - Emoji Support! 🎉
 
-**New Features:**
-- ✨ **Mermaid theme support** - Choose from 5 color themes: `default`, `neutral`, `dark`, `forest`, `base`
-- ✨ **Mermaid quality control** - Scale factor 1-4 for diagram resolution (CLI: `--mermaid-scale`, API: `mermaid_scale`)
-- ✨ **Automatic emoji removal** - Emoji characters are removed for PDF compatibility (clean text output)
-- ✨ **Hyperlink handling** - Markdown hyperlinks `[text](url)` are converted to plain text for readability
+**Major New Features:**
+- 🎉 **Full emoji support** - Colored emoji render natively via HTML/Chromium engine
+- 📑 **Table of contents** - Add `[TOC]` anywhere in your markdown for automatic TOC
+- 📄 **Page numbering** - Automatic footer pagination (X / Y format)
+- 🎨 **HTML rendering engine** - Superior quality, modern CSS styling (now default)
+- ⚡ **Dual engine architecture** - HTML (default) or ReportLab (legacy) engines
 
-**Bug Fixes:**
-- 🐛 **Fixed Mermaid diagram sizing** - Canvas-based rendering ensures exact dimensions, no whitespace issues
-- 🐛 **Fixed diagram quality** - High-resolution rendering (2x scale by default) for crisp, professional diagrams
-- 🐛 **Improved spacing** - Better margins around Mermaid diagrams (0.3cm before, 0.5cm after)
-- 🐛 **Fixed hyperlink rendering** - Links no longer cause rendering issues in table of contents
+**Technical Improvements:**
+- ✅ Mermaid diagrams automatically sized to fit pages
+- ✅ Better diagram quality with controlled height limits
+- ✅ Professional page layout with proper margins
+- ✅ Modern CSS styling for all elements
+- ✅ Browser-grade rendering quality
+
+**How to Use:**
+```bash
+# Emoji now work by default!
+md2pdf document.md
+
+# Table of contents
+echo "[TOC]" > doc.md
+md2pdf doc.md
+
+# Legacy engine (if needed)
+md2pdf document.md --engine reportlab
+```
 
 **Breaking Changes:**
-- 📝 Emoji are now automatically removed from text (previously rendered as � or boxes)
-- 📝 Hyperlinks are now converted to plain text (full clickable support planned for future version)
+- None! Default engine changed to HTML, but ReportLab still available with `--engine reportlab`
 
 ---
 
+### v1.3.1 (2025-10-21)
+
+- 🐛 Fixed emoji removal for technical symbols (→, ←, ✓, etc.)
+- 🔧 Improved emoji detection accuracy
+
+### v1.3.0 (2025-10-21)
+
+- ✨ Mermaid theme support - 5 color themes available
+- ✨ Mermaid quality control - Scale factor 1-4 for resolution
+- ✨ Automatic emoji removal (for PDF compatibility with ReportLab)
+- 🐛 Fixed Mermaid diagram sizing issues
+- 🐛 Fixed hyperlink rendering
+
 ### v1.2.0 (2025-10-20)
 
-- ✨ **Full Unicode/UTF-8 support** - Multilingual text, special characters (•, è, à, etc.)
-- ✨ **Customizable fonts** - Choose Arial, DejaVu, Helvetica, or provide custom TTF file
-- ✨ **Bold & inline code in lists** - Full markdown formatting support in bullet/numbered lists
-- ✨ **Larger Mermaid diagrams** - Use full page width for better readability
-- 🐛 **Fixed encoding issues** - Bullet characters and accented text now display correctly
-- 🔧 **Automatic font detection** - Auto-selects best Unicode font for your system
+- ✨ Full Unicode/UTF-8 support
+- ✨ Customizable fonts (Arial, DejaVu, Helvetica, custom TTF)
+- ✨ Bold & inline code in lists
+- 🐛 Fixed encoding issues

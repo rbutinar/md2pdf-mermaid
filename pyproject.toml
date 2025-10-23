@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "md2pdf-mermaid"
-version = "1.3.1"
-description = "Convert Markdown to PDF with Mermaid diagram rendering"
+version = "1.4.0"
+description = "Convert Markdown to PDF with Mermaid diagram rendering and emoji support"
 readme = "README.md"
 authors = [{name = "Roberto Butinar", email = "roberto.butinar@gmail.com"}]
 license = {text = "MIT"}
@@ -32,6 +32,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+emoji = [
+    "pilmoji>=2.0.0",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",

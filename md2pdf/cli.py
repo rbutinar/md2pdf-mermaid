@@ -7,6 +7,7 @@ import argparse
 import sys
 from pathlib import Path
 from .converter import convert_markdown_to_pdf
+from .html_renderer import convert_markdown_to_pdf_html
 from . import __version__
 
 
@@ -25,6 +26,9 @@ Examples:
   md2pdf doc.md --orientation landscape      # Landscape orientation
   md2pdf doc.md --font arial                 # Use Arial font (Windows)
   md2pdf doc.md --font dejavu                # Use DejaVu font (Linux)
+  md2pdf doc.md --emoji-strategy remove      # Remove emoji, keep symbols
+  md2pdf doc.md --emoji-strategy pilmoji     # Colored emoji (requires pilmoji)
+  md2pdf doc.md --engine html                # Full emoji support (HTML/Chromium)
 
 For more information: https://github.com/rbutinar/md2pdf-mermaid
         """
@@ -82,6 +86,18 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
         help="Mermaid diagram color theme (default, neutral, dark, forest, base). Default: default"
     )
     parser.add_argument(
+        "--emoji-strategy",
+        choices=["auto", "pilmoji", "remove", "keep"],
+        default="auto",
+        help="Emoji rendering strategy: auto=try pilmoji then remove (default), pilmoji=colored images (requires pilmoji), remove=remove emoji keep symbols, keep=preserve all (needs font support)"
+    )
+    parser.add_argument(
+        "--engine",
+        choices=["html", "reportlab"],
+        default="html",
+        help="PDF rendering engine: html=full emoji support via Chromium (default), reportlab=legacy engine with advanced PDF features"
+    )
+    parser.add_argument(
         "-v", "--version",
         action="version",
         version=f"md2pdf {__version__}"
@@ -108,28 +124,42 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
 
         # Convert to PDF
         print(f"Converting {input_path} to PDF...")
-        if args.no_mermaid:
-            print("  (Mermaid rendering disabled)")
+        if args.engine == 'html':
+            print("  (Using HTML/Chromium engine - full emoji support)")
+            if args.no_mermaid:
+                print("  (Mermaid rendering disabled)")
+            result = convert_markdown_to_pdf_html(
+                markdown_content,
+                output_path,
+                title=title,
+                page_size=args.page_size,
+                orientation=args.orientation,
+                enable_mermaid=not args.no_mermaid
+            )
+        else:
+            if args.no_mermaid:
+                print("  (Mermaid rendering disabled)")
 
-        result = convert_markdown_to_pdf(
-            markdown_content,
-            output_path,
-            title=title,
-            enable_mermaid=not args.no_mermaid,
-            page_numbers=not args.no_page_numbers,
-            page_size=args.page_size,
-            orientation=args.orientation,
-            font_name=args.font if args.font and args.font.lower() != 'auto' else None,
-            mermaid_scale=args.mermaid_scale,
-            mermaid_theme=args.mermaid_theme
-        )
+            result = convert_markdown_to_pdf(
+                markdown_content,
+                output_path,
+                title=title,
+                enable_mermaid=not args.no_mermaid,
+                page_numbers=not args.no_page_numbers,
+                page_size=args.page_size,
+                orientation=args.orientation,
+                font_name=args.font if args.font and args.font.lower() != 'auto' else None,
+                mermaid_scale=args.mermaid_scale,
+                mermaid_theme=args.mermaid_theme,
+                emoji_strategy=args.emoji_strategy
+            )
 
         # Success
         output_size_kb = Path(output_path).stat().st_size / 1024
         print(f"[OK] PDF created: {output_path} ({output_size_kb:.1f} KB)")
 
-        # Show Mermaid info if applicable
-        if result['mermaid_count'] > 0:
+        # Show Mermaid info if applicable (only for ReportLab engine)
+        if result.get('mermaid_count', 0) > 0:
             if result['playwright_available'] and not args.no_mermaid:
                 print(f"  [OK] Rendered {result['mermaid_rendered']}/{result['mermaid_count']} Mermaid diagrams")
             elif not result['playwright_available'] and not args.no_mermaid:
