@@ -36,6 +36,7 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
 
     parser.add_argument(
         "input",
+        nargs="?",
         help="Input Markdown file"
     )
     parser.add_argument(
@@ -98,6 +99,11 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
         help="PDF rendering engine: html=full emoji support via Chromium (default), reportlab=legacy engine with advanced PDF features"
     )
     parser.add_argument(
+        "--setup-browser",
+        action="store_true",
+        help="Download Chromium browser for PDF rendering and exit"
+    )
+    parser.add_argument(
         "-v", "--version",
         action="version",
         version=f"md2pdf {__version__}"
@@ -105,7 +111,15 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
 
     args = parser.parse_args()
 
+    # Handle --setup-browser: download Chromium and exit
+    if args.setup_browser:
+        from .browser_manager import install_browser
+        install_browser()
+        return 0
+
     # Validate input file
+    if not args.input:
+        parser.error("the following arguments are required: input")
     input_path = Path(args.input)
     if not input_path.exists():
         print(f"Error: File not found: {input_path}", file=sys.stderr)
@@ -118,6 +132,18 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
     title = args.title or input_path.stem
 
     try:
+        # Ensure browser is available for engines that need it
+        needs_browser = args.engine == 'html' or not args.no_mermaid
+        if needs_browser:
+            from .browser_manager import ensure_browser
+            try:
+                ensure_browser()
+            except SystemExit:
+                if args.engine == 'html':
+                    return 1
+                # For reportlab engine, mermaid is optional - continue without browser
+                print("  (Continuing without Mermaid support)")
+
         # Read markdown content
         with open(input_path, "r", encoding="utf-8") as f:
             markdown_content = f.read()

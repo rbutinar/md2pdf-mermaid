@@ -10,6 +10,6 @@ from .html_renderer import convert_markdown_to_pdf_html
 from .mermaid import render_mermaid_to_png
 from .emoji_handler import EmojiHandler
 
-__version__ = "1.4.2"
+__version__ = "1.5.0"
 __author__ = "Roberto Butinar"
 __all__ = ["convert_markdown_to_pdf", "convert_markdown_to_pdf_html", "parse_markdown", "render_mermaid_to_png", "EmojiHandler"]

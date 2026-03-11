@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "md2pdf-mermaid"
-version = "1.4.3"
+version = "1.5.0"
 description = "Convert Markdown to PDF with Mermaid diagram rendering and emoji support"
 readme = "README.md"
 authors = [{name = "Roberto Butinar", email = "roberto.butinar@gmail.com"}]
@@ -42,6 +42,7 @@ dev = [
     "black>=23.0",
     "flake8>=6.0",
     "mypy>=1.0",
+    "pyinstaller>=6.0",
 ]
 
 [project.urls]

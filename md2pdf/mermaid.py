@@ -16,8 +16,16 @@ except ImportError:
 
 
 def is_playwright_available():
-    """Check if Playwright is installed and browsers are available"""
-    return PLAYWRIGHT_AVAILABLE
+    """Check if Playwright is installed and a browser binary is available."""
+    if not PLAYWRIGHT_AVAILABLE:
+        return False
+    # Verify that Chromium can actually be found
+    try:
+        from .browser_manager import is_browser_installed
+        return is_browser_installed()
+    except ImportError:
+        # browser_manager not available (shouldn't happen, but be safe)
+        return True
 
 
 def render_mermaid_to_png(mermaid_code, output_path, width=1400, height=1000, scale=2, theme='default'):
