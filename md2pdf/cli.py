@@ -107,8 +107,11 @@ For more information: https://github.com/rbutinar/md2pdf-mermaid
 
     # Validate input file
     input_path = Path(args.input)
-    if not input_path.exists():
-        print(f"Error: File not found: {input_path}", file=sys.stderr)
+    if not input_path.is_file():
+        if input_path.is_dir():
+            print(f"Error: Input is a directory, not a file: {input_path}", file=sys.stderr)
+        else:
+            print(f"Error: File not found: {input_path}", file=sys.stderr)
         return 1
 
     # Determine output path
